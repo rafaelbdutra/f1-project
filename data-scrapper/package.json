@@ -1,0 +1,16 @@
+{
+  "name": "data-scrapper",
+  "version": "1.0.0",
+  "description": "F1 data scrapper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rafael Dutra",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.658.0",
+    "puppeteer": "^3.0.0"
+  },
+  "devDependencies": {}
+}
