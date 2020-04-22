@@ -1,0 +1,9 @@
+{
+    "baseUrl": "https://www.formula1.com/en/",
+
+    "drivers": {
+        "path": "drivers.html",
+        "main-link-selector": "div.col-12 > a",
+        "image-output-path": "/tmp/drivers/"
+    }
+}
