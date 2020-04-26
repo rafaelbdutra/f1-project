@@ -1,5 +1,7 @@
-const drivers = require('./drivers/drivers');
+const drivers = require('./drivers');
 const AWS = require('aws-sdk');
+const path = require('path');
+global.appRoot = path.resolve(process.cwd());
 
 (async () => {
     drivers.scrapeDrivers();

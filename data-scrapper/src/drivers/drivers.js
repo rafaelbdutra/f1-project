@@ -1,11 +1,15 @@
 const puppeteer = require('puppeteer');
-const https = require('https');
 const fs = require('fs');
 const config = require('../config.json');
+const imageDownloader = require('./image-downloader');
 
 const url = config.baseUrl + config.drivers.path;
-const mainLinkSelector = config.drivers["main-link-selector"];
-const imageOutputPath = config.drivers["image-output-path"];
+const {
+    "main-link-selector": mainLinkSelector,
+    "thumbnail-selector": thumbnailSelector,
+    ...selectors
+} = config.drivers.selectors;
+const driversJsonFile = process.cwd() + "/" + config.drivers["output-path"] + config.drivers.jsonOutputFile;
 
 const scrapeDrivers = async () => {
     const browser = await puppeteer.launch();
@@ -18,16 +22,16 @@ const scrapeDrivers = async () => {
     });
     await autoScroll(page);
 
-    const thumbnails = await fetchDriverThumbnailPictures(page);
+    const thumbnailUrls = await fetchDriverThumbnailUrls(page);
     const urls = await fetchDriverUrls(page);
     const drivers = await fetchAllDriversData(browser, urls);
 
-    console.dir(drivers);
     await browser.close();
 
-    await downloadProfilePictures(drivers);
-    await downloadThumbnailPictures(thumbnails, drivers);
-    await downloadHelmetPictures(drivers);
+    await imageDownloader.downloadProfilePictures(drivers);
+    await imageDownloader.downloadThumbnailPictures(thumbnailUrls, drivers);
+    await imageDownloader.downloadHelmetPictures(drivers);
+    await saveDriversAsJson(drivers);
 };
 
 const fetchDriverUrls = async (page) => {
@@ -54,7 +58,7 @@ const fetchDriverData = async (browser, url) => {
 };
 
 const fetchDriverDataAsObject = async (page) => {
-    return await page.evaluate(() => {
+    return await page.evaluate((selectors) => {
         var driver = Array.from(document.querySelectorAll("tr")).map(tr => {
             var obj = {};
             const key = tr.querySelector('th').textContent.trim().toLowerCase().split(' ').join('-');
@@ -69,94 +73,24 @@ const fetchDriverDataAsObject = async (page) => {
             return obj;
         }, {});
 
-        driver.name = document.querySelector('h1').textContent;
-        driver.number = document.querySelector('.driver-number').textContent.trim();
-        driver.flag = document.querySelector('.icn-flag img').src;
-        driver['profile-picture'] = document.querySelector('.driver-image-crop-inner img').src;
-        driver['helmet-picture'] = document.querySelector('.brand-logo img').src;
+        driver.name = document.querySelector(selectors.name).textContent;
+        driver.number = document.querySelector(selectors.number).textContent.trim();
+        driver.flag = document.querySelector(selectors.flag).src;
+        driver['profile-picture'] = document.querySelector(selectors.profilePicture).src;
+        driver['helmet-picture'] = document.querySelector(selectors.helmetPicture).src;
 
         return driver;
-    });
+    }, selectors);
 };
 
 const closeBanner = async (page) => {
     try {
         await page.click('.sailthru-overlay-close');
-        console.log('Clicked');
-    } catch (error) {
-        console.log("Banner didn't appear");
-    }
-}
-
-const fetchDriverThumbnailPictures = async (page) => {
-    page.scro
-    return page.evaluate((selector) => Array.from(document.querySelectorAll(selector)).map(image => image.src), '.listing-item--photo img');
+    } catch (error) { }
 };
 
-const downloadProfilePictures = async (drivers) => {
-    await Promise.all(drivers.map(driver => downloadProfilePicture(driver)));
-};
-
-const downloadProfilePicture = async (driver) => {
-    const url = driver['profile-picture'];
-    const fileName = driver.name.toLowerCase().split(' ').join('-');
-    const fileExtension = url.slice(url.lastIndexOf('.'));
-
-    const file = fs.createWriteStream(imageOutputPath + fileName + fileExtension);
-    https.get(url, response => {
-        response.pipe(file);
-        file.on('finish', function() {
-            file.close();  // close() is async, call cb after close completes.
-        });
-    }).on('error', function(err) {
-        fs.unlink(file);
-    });
-};
-
-const downloadThumbnailPictures = async (thumbnails, drivers) => {
-    await Promise.all(thumbnails.map(thumbnail => downloadThumbnailPicture(thumbnail, drivers)));
-};
-
-const downloadThumbnailPicture = async (thumbnail, drivers) => {
-    const filteredDriver = drivers.find(driver => {
-        const driverName = driver.name.toLowerCase().split(' ')[0];
-        const lowerThumbail = thumbnail.toLowerCase();
-
-        return lowerThumbail.lastIndexOf(driverName) > -1;
-    });
-
-    const fileName = filteredDriver.name.toLowerCase().split(' ').join('-') + '-thumbnail';
-    const fileExtension = thumbnail.slice(thumbnail.lastIndexOf('.'));
-
-    const file = fs.createWriteStream(imageOutputPath + fileName + fileExtension);
-    https.get(thumbnail, response => {
-        response.pipe(file);
-        file.on('finish', function() {
-            file.close();  // close() is async, call cb after close completes.
-        });
-    }).on('error', function(err) {
-        fs.unlink(file);
-    });
-};
-
-const downloadHelmetPictures = async (drivers) => {
-    await Promise.all(drivers.map(driver => downloadHelmetPicture(driver)));
-};
-
-const downloadHelmetPicture = async (driver) => {
-    const url = driver['helmet-picture'];
-    const fileName = driver.name.toLowerCase().split(' ').join('-') + '-helmet';
-    const fileExtension = url.slice(url.lastIndexOf('.'));
-
-    const file = fs.createWriteStream(imageOutputPath + fileName + fileExtension);
-    https.get(url, response => {
-        response.pipe(file);
-        file.on('finish', function() {
-            file.close();  // close() is async, call cb after close completes.
-        });
-    }).on('error', function(err) {
-        fs.unlink(file);
-    });
+const fetchDriverThumbnailUrls = async (page) => {
+    return page.evaluate((selector) => Array.from(document.querySelectorAll(selector)).map(image => image.src), thumbnailSelector);
 };
 
 const autoScroll = async (page) => {
@@ -176,6 +110,11 @@ const autoScroll = async (page) => {
             }, 100);
         });
     });
+};
+
+const saveDriversAsJson = async (drivers) => {
+    const json = JSON.stringify(drivers, null, 2);
+    return fs.promises.writeFile(driversJsonFile, json);
 };
 
 exports.scrapeDrivers = scrapeDrivers;

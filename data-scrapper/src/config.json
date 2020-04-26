@@ -3,7 +3,17 @@
 
     "drivers": {
         "path": "drivers.html",
-        "main-link-selector": "div.col-12 > a",
-        "image-output-path": "/tmp/drivers/"
+        "selectors": {
+            "main-link-selector": "div.col-12 > a",
+            "thumbnail-selector": ".listing-item--photo img",
+            "name": "h1",
+            "number": ".driver-number",
+            "flag": ".icn-flag img",
+            "profilePicture": ".driver-image-crop-inner img",
+            "helmetPicture": ".brand-logo img"
+        },
+        "output-path": "temp/drivers/",
+        "image-output-path": "images/",
+        "jsonOutputFile": "drivers.json"
     }
 }
