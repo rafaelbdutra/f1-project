@@ -11,6 +11,19 @@ const {
 } = config.drivers.selectors;
 const driversJsonFile = process.cwd() + "/" + config.drivers["output-path"] + config.drivers.jsonOutputFile;
 
+const getDriversAsJson = async () => {
+    return fs.promises.readFile(driversJsonFile);
+};
+
+const getDriversImages = async () => {
+    const files = await fs.promises.readdir(process.cwd() + "/" + config.drivers["output-path"] + config.drivers["image-output-path"]);
+    return Promise.all(files.map(file => [file, readImage(file)]));
+};
+
+const readImage = async (file) => {
+    return fs.promises.readFile(process.cwd() + "/" + config.drivers["output-path"] + config.drivers["image-output-path"] + file);
+};
+
 const scrapeDrivers = async () => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -118,3 +131,5 @@ const saveDriversAsJson = async (drivers) => {
 };
 
 exports.scrapeDrivers = scrapeDrivers;
+exports.getDriversAsJson = getDriversAsJson;
+exports.getDriversImages = getDriversImages;
