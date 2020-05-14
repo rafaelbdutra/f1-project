@@ -1,7 +1,7 @@
 {
-  "name": "data-scrapper",
+  "name": "data-scraper",
   "version": "1.0.0",
-  "description": "F1 data scrapper",
+  "description": "F1 data scraper",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
