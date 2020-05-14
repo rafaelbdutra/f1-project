@@ -1,4 +1,4 @@
-# F1 Data Scrapper
+# F1 Data Scraper
 
 ## Starting LocalStack
 `TMPDIR=/private$TMPDIR docker-compose up`
