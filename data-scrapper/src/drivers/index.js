@@ -1,7 +1,5 @@
-const drivers = require('./drivers');
-const dataUploader = require('./data-uploader');
+const scraper = require('./scraper');
+const uploader = require('./uploader');
 
-exports.scrapeDrivers = drivers.scrapeDrivers;
-exports.getDriversAsJson = drivers.getDriversAsJson;
-exports.getDriversImages = drivers.getDriversImages;
-exports.uploadDrivers = dataUploader.uploadDrivers;
+exports.scrapeDrivers = scraper.scrapeDrivers;
+exports.uploadDrivers = uploader.uploadDrivers;

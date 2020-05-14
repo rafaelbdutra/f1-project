@@ -10,12 +10,8 @@ const downloadProfilePictures = async (drivers) => {
 };
 
 const downloadProfilePicture = async (driver) => {
-    const url = driver['profile-picture'];
-    const fileName = driver.name.toLowerCase().split(' ').join('-');
-    const fileExtension = url.slice(url.lastIndexOf('.'));
-
-    const file = fs.createWriteStream(imageOutputPath + fileName + fileExtension);
-    https.get(url, response => {
+    const file = fs.createWriteStream(imageOutputPath + driver.getProfilePictureFileName());
+    https.get(driver.profilePicture, response => {
         response.pipe(file);
         file.on('finish', function () {
             file.close();  // close() is async, call cb after close completes.
@@ -25,24 +21,14 @@ const downloadProfilePicture = async (driver) => {
     });
 };
 
-const downloadThumbnailPictures = async (thumbnailLinks, drivers) => {
+const downloadThumbnailPictures = async (drivers) => {
     await createTempDirIfNeeded();
-    await Promise.all(thumbnailLinks.map(thumbnail => downloadThumbnailPicture(thumbnail, drivers)));
+    await Promise.all(drivers.map(driver => downloadThumbnailPicture(driver)));
 };
 
-const downloadThumbnailPicture = async (thumbnail, drivers) => {
-    const filteredDriver = drivers.find(driver => {
-        const driverName = driver.name.toLowerCase().split(' ')[0];
-        const lowerThumbail = thumbnail.toLowerCase();
-
-        return lowerThumbail.lastIndexOf(driverName) > -1;
-    });
-
-    const fileName = filteredDriver.name.toLowerCase().split(' ').join('-') + '-thumbnail';
-    const fileExtension = thumbnail.slice(thumbnail.lastIndexOf('.'));
-
-    const file = fs.createWriteStream(imageOutputPath + fileName + fileExtension);
-    https.get(thumbnail, response => {
+const downloadThumbnailPicture = async (driver) => {
+    const file = fs.createWriteStream(imageOutputPath + driver.getThumbnailPictureFileName());
+    https.get(driver.thumbnailPicture, response => {
         response.pipe(file);
         file.on('finish', function () {
             file.close();  // close() is async, call cb after close completes.
@@ -58,12 +44,8 @@ const downloadHelmetPictures = async (drivers) => {
 };
 
 const downloadHelmetPicture = async (driver) => {
-    const url = driver['helmet-picture'];
-    const fileName = driver.name.toLowerCase().split(' ').join('-') + '-helmet';
-    const fileExtension = url.slice(url.lastIndexOf('.'));
-
-    const file = fs.createWriteStream(imageOutputPath + fileName + fileExtension);
-    https.get(url, response => {
+    const file = fs.createWriteStream(imageOutputPath + driver.getHelmetPictureFileName());
+    https.get(driver.helmetPicture, response => {
         response.pipe(file);
         file.on('finish', function () {
             file.close();  // close() is async, call cb after close completes.

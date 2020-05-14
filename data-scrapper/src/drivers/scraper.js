@@ -1,7 +1,8 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
 const config = require('../config.json');
 const imageDownloader = require('./image-downloader');
+const fileHelper = require('./file-helper');
+const Driver = require('./Driver').Driver;
 
 const url = config.baseUrl + config.drivers.path;
 const {
@@ -9,26 +10,18 @@ const {
     "thumbnail-selector": thumbnailSelector,
     ...selectors
 } = config.drivers.selectors;
-const driversJsonFile = process.cwd() + "/" + config.drivers["output-path"] + config.drivers.jsonOutputFile;
 
-const getDriversAsJson = async () => {
-    return fs.promises.readFile(driversJsonFile);
-};
-
-const getDriversImages = async () => {
-    const files = await fs.promises.readdir(process.cwd() + "/" + config.drivers["output-path"] + config.drivers["image-output-path"]);
-    return Promise.all(files.map(file => [file, readImage(file)]));
-};
-
-const readImage = async (file) => {
-    return fs.promises.readFile(process.cwd() + "/" + config.drivers["output-path"] + config.drivers["image-output-path"] + file);
-};
-
+/**
+ * Main Function - navigate to drivers' main page and scraps drivers data 
+ * from formula1.com
+ */
 const scrapeDrivers = async () => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        headless: true
+    });
     const page = await browser.newPage();
 
-    await page.goto(url);
+    await page.goto(url, { timeout: 60000 });
     await page.setViewport({
         width: 1200,
         height: 800
@@ -38,41 +31,59 @@ const scrapeDrivers = async () => {
     const thumbnailUrls = await fetchDriverThumbnailUrls(page);
     const urls = await fetchDriverUrls(page);
     const drivers = await fetchAllDriversData(browser, urls);
-
+    
     await browser.close();
-
+    
+    merge(drivers, thumbnailUrls);
     await imageDownloader.downloadProfilePictures(drivers);
-    await imageDownloader.downloadThumbnailPictures(thumbnailUrls, drivers);
+    await imageDownloader.downloadThumbnailPictures(drivers);
     await imageDownloader.downloadHelmetPictures(drivers);
-    await saveDriversAsJson(drivers);
+    await fileHelper.saveDriversAsJson(drivers);
 };
 
+/**
+ * Scraps all drivers' urls from main driver's page
+ * @param {page} page 
+ */
 const fetchDriverUrls = async (page) => {
     return await page.evaluate((selector) => Array.from(document.querySelectorAll(selector)).map(anchor => anchor.href), mainLinkSelector);
 };
 
+/**
+ * Navigates and scraps data from multiple drivers given the main drivers page
+ * @param {browser} browser 
+ * @param {Array<string>} urls 
+ */
 const fetchAllDriversData = async (browser, urls) => {
     return Promise.all(urls.map(url => fetchDriverData(browser, url)))
         .catch(err => console.log(err));
 };
 
+/**
+ * Navigate to single driver's url and scrapes its data
+ * @param {broser} browser 
+ * @param {string} url 
+ */
 const fetchDriverData = async (browser, url) => {
     console.log('Getting driver data');
 
     const page = await browser.newPage();
-    await page.goto(url);
-
+    await page.goto(url, { timeout: 60000 });
     await closeBanner();
-    const driverData = await fetchDriverDataAsObject(page);
 
+    const data = await fetchDriverDataAsObject(page);
     await page.close();
 
-    return driverData;
+    return Driver.fromDownload(data);
 };
 
+/**
+ * Scraps driver's data from given page
+ * @param {page} page 
+ */
 const fetchDriverDataAsObject = async (page) => {
     return await page.evaluate((selectors) => {
-        var driver = Array.from(document.querySelectorAll("tr")).map(tr => {
+        var driver = Array.from(document.querySelectorAll('tr')).map(tr => {
             var obj = {};
             const key = tr.querySelector('th').textContent.trim().toLowerCase().split(' ').join('-');
             const value = tr.querySelector('td').textContent.trim();
@@ -96,16 +107,44 @@ const fetchDriverDataAsObject = async (page) => {
     }, selectors);
 };
 
+/**
+ * Scraps all drivers' thumbnail images links
+ * @param {page} page 
+ */
+const fetchDriverThumbnailUrls = async (page) => {
+    return page.evaluate((selector) => Array.from(document.querySelectorAll(selector)).map(image => image.src), thumbnailSelector);
+};
+
+/**
+ * Merge thumbnail urls to the specific driver
+ * @param {Array<Driver>} drivers 
+ * @param {Array<string} thumbnailUrls 
+ */
+const merge = (drivers, thumbnailUrls) => {
+    drivers.forEach(driver => {
+        const lastName = driver.lastName.toLowerCase();
+        const thumbnailUrl = thumbnailUrls.find(url => url.lastIndexOf(lastName));
+
+        driver.thumbnailPicture = thumbnailUrl;
+    });
+
+    return drivers;
+}
+
+/**
+ * Close banner randomly opened on formula1.com pages
+ * @param {page} page 
+ */
 const closeBanner = async (page) => {
     try {
         await page.click('.sailthru-overlay-close');
     } catch (error) { }
 };
 
-const fetchDriverThumbnailUrls = async (page) => {
-    return page.evaluate((selector) => Array.from(document.querySelectorAll(selector)).map(image => image.src), thumbnailSelector);
-};
-
+/**
+ * Auto scroll a page to its bottom (used in main drivers page due to thumbnail lazy load)
+ * @param {page} page 
+ */
 const autoScroll = async (page) => {
     await page.evaluate(async () => {
         await new Promise((resolve, reject) => {
@@ -125,11 +164,9 @@ const autoScroll = async (page) => {
     });
 };
 
-const saveDriversAsJson = async (drivers) => {
-    const json = JSON.stringify(drivers, null, 2);
-    return fs.promises.writeFile(driversJsonFile, json);
-};
-
-exports.scrapeDrivers = scrapeDrivers;
-exports.getDriversAsJson = getDriversAsJson;
-exports.getDriversImages = getDriversImages;
+/**
+ * Main driver scrapping execution
+ */
+(async () => {
+    scrapeDrivers();
+})();
