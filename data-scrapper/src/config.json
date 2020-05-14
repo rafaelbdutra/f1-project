@@ -1,6 +1,15 @@
 {
     "baseUrl": "https://www.formula1.com/en/",
 
+    "aws": {
+        "endpoint": "http://localhost:4572",
+        "bucket": "f1-project",
+        "drivers": {
+            "json-file-path": "drivers/drivers.json",
+            "image-path": "drivers/images/"
+        }
+    },
+
     "drivers": {
         "path": "drivers.html",
         "selectors": {

@@ -1,3 +1,5 @@
-const drivers = require('./drivers');
+const scraper = require('./scraper');
+const uploader = require('./uploader');
 
-exports.scrapeDrivers = drivers.scrapeDrivers;
+exports.scrapeDrivers = scraper.scrapeDrivers;
+exports.uploadDrivers = uploader.uploadDrivers;
