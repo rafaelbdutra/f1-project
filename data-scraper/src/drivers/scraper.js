@@ -38,6 +38,7 @@ const scrapeDrivers = async () => {
     await imageDownloader.downloadProfilePictures(drivers);
     await imageDownloader.downloadThumbnailPictures(drivers);
     await imageDownloader.downloadHelmetPictures(drivers);
+    await imageDownloader.downloadFlagImages(drivers);
     await fileHelper.saveDriversAsJson(drivers);
 };
 
