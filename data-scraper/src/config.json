@@ -24,5 +24,17 @@
         "output-path": "temp/drivers/",
         "image-output-path": "images/",
         "jsonOutputFile": "drivers.json"
+    },
+
+    "teams": {
+        "path": "teams.html",
+        "selectors": {
+            "main-link-selector": "div.col-12 > a",
+            "car-image-selector": "div.listing-image .team-car img",
+            "small-logo-selector": "div.logo .team-car img",
+            "name": "h1",
+            "bigLogo": ".brand-logo img",
+            "drivers": ".driver-name"
+        }
     }
 }

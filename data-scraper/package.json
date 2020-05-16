@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "drivers:scrape": "node src/drivers/scraper.js",
-    "drivers:upload": "node src/drivers/uploader.js"
+    "drivers:upload": "node src/drivers/uploader.js",
+    "teams:scrape": "node src/teams/scraper.js"
   },
   "author": "Rafael Dutra",
   "license": "ISC",
