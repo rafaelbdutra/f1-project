@@ -5,7 +5,8 @@ class Driver {
     static Picture = {
         MAIN: '-main',
         HELMET: '-helmet',
-        THUMBNAIL: '-thumbnail'
+        THUMBNAIL: '-thumbnail',
+        FLAG: '-flag'
     }
 
     static fromDownload(data) {
@@ -59,6 +60,7 @@ class Driver {
         driver.localProfilePicture = driverImagePath + driver.getProfilePictureFileName();
         driver.localThumbnailPicture = driverImagePath + driver.getThumbnailPictureFileName();
         driver.localHelmetPicture = driverImagePath + driver.getHelmetPictureFileName();
+        driver.localFlagImage = driverImagePath + driver.getFlagImageFileName();
 
         return driver;
     }
@@ -79,6 +81,10 @@ class Driver {
         return this.getNormalisedName() + Driver.Picture.HELMET + this.helmetPicture.slice(this.helmetPicture.lastIndexOf('.'));
     }
 
+    getFlagImageFileName() {
+        return this.getNormalisedName() + Driver.Picture.FLAG + this.flag.slice(this.flag.lastIndexOf('.'));
+    }
+
     getNormalisedName() {
         return this.fullName.toLowerCase().split(' ').join('-');
     }
@@ -87,6 +93,7 @@ class Driver {
         this.profilePictureImage = await fileHelper.readImage(this.getProfilePictureFileName());
         this.thumbnailPictureImage = await fileHelper.readImage(this.getThumbnailPictureFileName());
         this.helmetPictureImage = await fileHelper.readImage(this.getHelmetPictureFileName());
+        this.flagImage = await fileHelper.readImage(this.getFlagImageFileName());
     }
 
     /**
