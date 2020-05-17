@@ -25,7 +25,7 @@ const uploadDrivers = async () => {
 };
 
 const getDriversFromFileSystem = async () => {
-    const driversJson = await fileUploader.getDriversAsJson();
+    const driversJson = await fileUploader.getFile(Driver.jsonFilePath);
     const drivers = JSON.parse(driversJson).map(driver => Driver.fromJson(driver));
 
     await Promise.all(drivers.map(driver => driver.loadImages()));
