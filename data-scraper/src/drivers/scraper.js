@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const config = require('../config.json');
 const imageDownloader = require('./image-downloader');
-const fileHelper = require('./file-helper');
+const fileHelper = require('../file-helper');
 const Driver = require('./Driver').Driver;
 
 const url = config.baseUrl + config.drivers.path;

@@ -1,4 +1,4 @@
-const fileHelper = require('./file-helper');
+const fileHelper = require('../file-helper');
 const config = require('../config.json');
 
 class Driver {

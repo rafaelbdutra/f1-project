@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const config = require('../config.json');
 const imageDownloader = require('./image-downloader');
-const fileHelper = require('../drivers/file-helper');
+const fileHelper = require('../file-helper');
 const Team = require('./Team').Team;
 
 const url = config.baseUrl + config.teams.path;
