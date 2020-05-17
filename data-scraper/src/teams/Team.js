@@ -1,6 +1,16 @@
-
+const config = require('../config.json');
 
 class Team {
+
+    static jsonFilePath = process.cwd() + "/" + config.teams["output-path"] + config.teams.jsonOutputFile;
+    static imagesOutputPath = process.cwd() + "/" + config.teams["output-path"] + config.teams["image-output-path"];
+
+    static Image = {
+        SMALL_LOGO: '-small-logo',
+        BIG_LOGO: '-big-logo',
+        CAR: '-car'
+    }
+    
     static fromDownload(data) {
         const team = new Team();
 
@@ -23,6 +33,35 @@ class Team {
         team.smallLogoUrl = '';
 
         return team;
+    }
+
+    getSmallLogoImageFileName() {
+        return this.getNormalisedName() + Team.Image.SMALL_LOGO + this.smallLogoUrl.slice(this.smallLogoUrl.lastIndexOf('.'));
+    }
+
+    getBigLogoImageFileName() {
+        return this.getNormalisedName() + Team.Image.BIG_LOGO + this.bigLogoUrl.slice(this.bigLogoUrl.lastIndexOf('.'));
+    }
+
+    getCarImageFileName() {
+        return this.getNormalisedName() + Team.Image.CAR + this.carImageUrl.slice(this.carImageUrl.lastIndexOf('.'));
+    }
+
+    getNormalisedName() {
+        return this.name.toLowerCase().split(' ').join('-');
+    }
+
+    /**
+     * json strigify helpers
+     */
+
+    static propertiesToExclude = ['none'];
+
+    static replacer(key, value) {
+        if (Team.propertiesToExclude.includes(key))
+            return undefined;
+
+        return value;
     }
 }
 

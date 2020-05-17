@@ -5,6 +5,10 @@ const Driver = require('./Driver').Driver;
 const driversJsonFile = process.cwd() + "/" + config.drivers["output-path"] + config.drivers.jsonOutputFile;
 const driversImageOutputPath = process.cwd() + "/" + config.drivers["output-path"] + config.drivers["image-output-path"];
 
+const saveFile = async (destFile, data) => {
+    return fs.promises.writeFile(destFile, data);
+};
+
 const saveDriversAsJson = async (drivers) => {
     const json = JSON.stringify(drivers, Driver.replacer, 2);
     return fs.promises.writeFile(driversJsonFile, json);
@@ -27,6 +31,7 @@ const getDriverImagePath = () => {
     return driversImageOutputPath;
 }
 
+exports.saveFile = saveFile;
 exports.saveDriversAsJson = saveDriversAsJson;
 exports.getDriversAsJson = getDriversAsJson;
 exports.getDriversImages = getDriversImages;
