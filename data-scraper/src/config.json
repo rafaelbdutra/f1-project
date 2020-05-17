@@ -35,6 +35,9 @@
             "name": "h1",
             "bigLogo": ".brand-logo img",
             "drivers": ".driver-name"
-        }
+        },
+        "output-path": "temp/teams/",
+        "image-output-path": "images/",
+        "jsonOutputFile": "teams.json"
     }
 }

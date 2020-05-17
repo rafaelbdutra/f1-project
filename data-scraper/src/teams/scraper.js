@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const config = require('../config.json');
-// const imageDownloader = require('./image-downloader');
-// const fileHelper = require('./file-helper');
+const imageDownloader = require('./image-downloader');
+const fileHelper = require('../drivers/file-helper');
 const Team = require('./Team').Team;
 
 const url = config.baseUrl + config.teams.path;
@@ -38,13 +38,12 @@ const scrapeTeams = async () => {
     
     merge(teams, 'carImageUrl', carImageUrls);
     merge(teams, 'smallLogoUrl', smallLogoUrls);
-    // await imageDownloader.downloadProfilePictures(drivers);
-    // await imageDownloader.downloadThumbnailPictures(drivers);
-    // await imageDownloader.downloadHelmetPictures(drivers);
-    // await imageDownloader.downloadFlagImages(drivers);
-    // await fileHelper.saveDriversAsJson(drivers);
+    await imageDownloader.downloadSmallLogoImages(teams);
+    await imageDownloader.downloadBigLogoImages(teams);
+    await imageDownloader.downloadCarImages(teams);
 
-    console.dir(teams);
+    const teamsJson = JSON.stringify(teams, Team.replacer, 2);
+    await fileHelper.saveFile(Team.jsonFilePath, teamsJson);
 };
 
 /**
@@ -61,7 +60,7 @@ const fetchTeamUrls = async (page) => {
  * @param {Array<string>} urls 
  */
 const fetchAllTeamsData = async (browser, urls) => {
-    return Promise.all(urls.slice(0,1).map(url => fetchTeamData(browser, url)))
+    return Promise.all(urls.map(url => fetchTeamData(browser, url)))
         .catch(err => console.log(err));
 };
 
