@@ -1,7 +1,7 @@
-const puppeteer = require('puppeteer');
+const browserHelper = require('../browser-helper');
 const config = require('../config.json');
 const imageDownloader = require('./image-downloader');
-const fileHelper = require('../drivers/file-helper');
+const fileHelper = require('../file-helper');
 const Team = require('./Team').Team;
 
 const url = config.baseUrl + config.teams.path;
@@ -17,24 +17,14 @@ const {
  * from formula1.com
  */
 const scrapeTeams = async () => {
-    const browser = await puppeteer.launch({
-        headless: false
-    });
-    const page = await browser.newPage();
-
-    await page.goto(url, { timeout: 60000 });
-    await page.setViewport({
-        width: 1200,
-        height: 800
-    });
-    await autoScroll(page);
+    const page = await browserHelper.openPage(url);
 
     const carImageUrls = await fetchTeamImageUrls(page, carImageSelector);
     const smallLogoUrls = await fetchTeamImageUrls(page, smallLogoSelector);
     const urls = await fetchTeamUrls(page);
-    const teams = await fetchAllTeamsData(browser, urls);
+    const teams = await fetchAllTeamsData(urls);
 
-    await browser.close();
+    await browserHelper.close();
     
     merge(teams, 'carImageUrl', carImageUrls);
     merge(teams, 'smallLogoUrl', smallLogoUrls);
@@ -56,26 +46,21 @@ const fetchTeamUrls = async (page) => {
 
 /**
  * Navigates and scraps data from multiple teams given the main team's page
- * @param {browser} browser 
  * @param {Array<string>} urls 
  */
-const fetchAllTeamsData = async (browser, urls) => {
-    return Promise.all(urls.map(url => fetchTeamData(browser, url)))
+const fetchAllTeamsData = async (urls) => {
+    return Promise.all(urls.map(url => fetchTeamData(url)))
         .catch(err => console.log(err));
 };
 
 /**
  * Navigate to single team's url and scrapes its data
- * @param {broser} browser 
  * @param {string} url 
  */
-const fetchTeamData = async (browser, url) => {
+const fetchTeamData = async (url) => {
     console.log('Getting team data');
 
-    const page = await browser.newPage();
-    await page.goto(url, { timeout: 60000 });
-    await closeBanner();
-
+    const page = await browserHelper.openPage(url);
     const data = await fetchTeamDataAsObject(page);
     await page.close();
 

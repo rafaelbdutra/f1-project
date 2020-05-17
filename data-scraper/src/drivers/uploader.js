@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const config = require('../config.json');
-const fileUploader = require('./file-helper');
+const fileUploader = require('../file-helper');
 const Driver = require('./Driver').Driver;
 
 const s3client = new AWS.S3({
