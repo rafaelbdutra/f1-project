@@ -1,6 +1,10 @@
 const fileHelper = require('./file-helper');
+const config = require('../config.json');
 
 class Driver {
+
+    static jsonFilePath = process.cwd() + "/" + config.drivers["output-path"] + config.drivers.jsonOutputFile;
+    static imageOutputPath = process.cwd() + "/" + config.drivers["output-path"] + config.drivers["image-output-path"];
 
     static Picture = {
         MAIN: '-main',
@@ -56,11 +60,10 @@ class Driver {
         driver.helmetPicture = json.helmetPicture;
         driver.thumbnailPicture = json.thumbnailPicture;
 
-        const driverImagePath = fileHelper.getDriverImagePath();
-        driver.localProfilePicture = driverImagePath + driver.getProfilePictureFileName();
-        driver.localThumbnailPicture = driverImagePath + driver.getThumbnailPictureFileName();
-        driver.localHelmetPicture = driverImagePath + driver.getHelmetPictureFileName();
-        driver.localFlagImage = driverImagePath + driver.getFlagImageFileName();
+        driver.localProfilePicture = Driver.imageOutputPath + driver.getProfilePictureFileName();
+        driver.localThumbnailPicture = Driver.imageOutputPath + driver.getThumbnailPictureFileName();
+        driver.localHelmetPicture = Driver.imageOutputPath + driver.getHelmetPictureFileName();
+        driver.localFlagImage = Driver.imageOutputPath + driver.getFlagImageFileName();
 
         return driver;
     }
@@ -90,10 +93,10 @@ class Driver {
     }
 
     async loadImages() {
-        this.profilePictureImage = await fileHelper.readImage(this.getProfilePictureFileName());
-        this.thumbnailPictureImage = await fileHelper.readImage(this.getThumbnailPictureFileName());
-        this.helmetPictureImage = await fileHelper.readImage(this.getHelmetPictureFileName());
-        this.flagImage = await fileHelper.readImage(this.getFlagImageFileName());
+        this.profilePictureImage = await fileHelper.readImage(Driver.imageOutputPath + this.getProfilePictureFileName());
+        this.thumbnailPictureImage = await fileHelper.readImage(Driver.imageOutputPath + this.getThumbnailPictureFileName());
+        this.helmetPictureImage = await fileHelper.readImage(Driver.imageOutputPath + this.getHelmetPictureFileName());
+        this.flagImage = await fileHelper.readImage(Driver.imageOutputPath + this.getFlagImageFileName());
     }
 
     /**
