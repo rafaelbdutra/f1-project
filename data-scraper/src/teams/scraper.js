@@ -124,39 +124,6 @@ const merge = (teams, property, imageUrls) => {
 }
 
 /**
- * Close banner randomly opened on formula1.com pages
- * @param {page} page 
- */
-const closeBanner = async (page) => {
-    try {
-        await page.click('.sailthru-overlay-close');
-    } catch (error) { }
-};
-
-/**
- * Auto scroll a page to its bottom (used in main teams page due to thumbnail lazy load)
- * @param {page} page 
- */
-const autoScroll = async (page) => {
-    await page.evaluate(async () => {
-        await new Promise((resolve, reject) => {
-            var totalHeight = 0;
-            var distance = 100;
-            var timer = setInterval(() => {
-                var scrollHeight = document.body.scrollHeight;
-                window.scrollBy(0, distance);
-                totalHeight += distance;
-
-                if(totalHeight >= scrollHeight){
-                    clearInterval(timer);
-                    resolve();
-                }
-            }, 100);
-        });
-    });
-};
-
-/**
  * Main team scrapping execution
  */
 (async () => {
