@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const browserHelper = require('../browser-helper');
 const config = require('../config.json');
 const imageDownloader = require('./image-downloader');
 const fileHelper = require('../file-helper');
@@ -16,23 +16,13 @@ const {
  * from formula1.com
  */
 const scrapeDrivers = async () => {
-    const browser = await puppeteer.launch({
-        headless: true
-    });
-    const page = await browser.newPage();
-
-    await page.goto(url, { timeout: 60000 });
-    await page.setViewport({
-        width: 1200,
-        height: 800
-    });
-    await autoScroll(page);
+    const page = await browserHelper.openPage(url, true);
 
     const thumbnailUrls = await fetchDriverThumbnailUrls(page);
     const urls = await fetchDriverUrls(page);
-    const drivers = await fetchAllDriversData(browser, urls);
+    const drivers = await fetchAllDriversData(urls);
     
-    await browser.close();
+    await browserHelper.close();
     
     merge(drivers, thumbnailUrls);
     await imageDownloader.downloadProfilePictures(drivers);
@@ -54,26 +44,21 @@ const fetchDriverUrls = async (page) => {
 
 /**
  * Navigates and scraps data from multiple drivers given the main drivers page
- * @param {browser} browser 
  * @param {Array<string>} urls 
  */
-const fetchAllDriversData = async (browser, urls) => {
-    return Promise.all(urls.map(url => fetchDriverData(browser, url)))
+const fetchAllDriversData = async (urls) => {
+    return Promise.all(urls.map(url => fetchDriverData(url)))
         .catch(err => console.log(err));
 };
 
 /**
  * Navigate to single driver's url and scrapes its data
- * @param {broser} browser 
  * @param {string} url 
  */
-const fetchDriverData = async (browser, url) => {
+const fetchDriverData = async (url) => {
     console.log('Getting driver data');
 
-    const page = await browser.newPage();
-    await page.goto(url, { timeout: 60000 });
-    await closeBanner();
-
+    const page = await browserHelper.openPage(url);
     const data = await fetchDriverDataAsObject(page);
     await page.close();
 
@@ -133,39 +118,6 @@ const merge = (drivers, thumbnailUrls) => {
 
     return drivers;
 }
-
-/**
- * Close banner randomly opened on formula1.com pages
- * @param {page} page 
- */
-const closeBanner = async (page) => {
-    try {
-        await page.click('.sailthru-overlay-close');
-    } catch (error) { }
-};
-
-/**
- * Auto scroll a page to its bottom (used in main drivers page due to thumbnail lazy load)
- * @param {page} page 
- */
-const autoScroll = async (page) => {
-    await page.evaluate(async () => {
-        await new Promise((resolve, reject) => {
-            var totalHeight = 0;
-            var distance = 100;
-            var timer = setInterval(() => {
-                var scrollHeight = document.body.scrollHeight;
-                window.scrollBy(0, distance);
-                totalHeight += distance;
-
-                if(totalHeight >= scrollHeight){
-                    clearInterval(timer);
-                    resolve();
-                }
-            }, 100);
-        });
-    });
-};
 
 /**
  * Main driver scrapping execution
