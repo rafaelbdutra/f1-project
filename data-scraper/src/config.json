@@ -39,5 +39,17 @@
         "output-path": "temp/teams/",
         "image-output-path": "images/",
         "jsonOutputFile": "teams.json"
+    },
+
+    "tracks": {
+        "path": "latest/article.f1-schedule-2020-latest-information.3P0b3hJYdFDm9xFieAYqCS.html",
+        "selectors": {
+            "main-link-selector": "div.f1-article--rich-text:nth-child(2) a",
+            "track-images-selector": "div.f1-image--wrapper img",
+            "name": "h1"
+        },
+        "output-path": "temp/tracks/",
+        "image-output-path": "images/",
+        "jsonOutputFile": "track.json"
     }
 }

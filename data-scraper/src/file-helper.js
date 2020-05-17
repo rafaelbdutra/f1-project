@@ -1,7 +1,7 @@
 const fs = require('fs');
 
-const saveFile = async (destFile, data) => {
-    return fs.promises.writeFile(destFile, data);
+const saveFile = async (destFilePath, data) => {
+    return fs.promises.writeFile(destFilePath, data);
 };
 
 const getFile = async (filePath) => {
