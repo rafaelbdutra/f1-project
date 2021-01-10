@@ -1,6 +1,6 @@
 const browserHelper = require('../browser-helper');
 const config = require('../config.json');
-// const imageDownloader = require('./image-downloader');
+const imageDownloader = require('./image-downloader');
 const fileHelper = require('../file-helper');
 const Track = require('./Track').Track;
 
@@ -19,15 +19,13 @@ const scrapeTracks = async () => {
 
     const urls = await fetchTrackUrls(page);
     const tracks = await fetchAllTracksData(urls);
-    // const trackImagesUrls = await fetchTrackImageUrls(page, trackImagesSelector);
 
     await browserHelper.close();
 
     console.dir(tracks);
-    
-    // merge(tracks, 'carImageUrl', trackImagesUrls);
-    // await imageDownloader.downloadBigLogoImages(tracks);
-    // await imageDownloader.downloadCarImages(tracks);
+
+    await imageDownloader.downloadCircuitImages(tracks);
+    await imageDownloader.downloadAerialImages(tracks);
 
     const tracksJson = JSON.stringify(tracks, Track.replacer, 2);
     await fileHelper.saveFile(Track.jsonFilePath, tracksJson);
@@ -46,7 +44,7 @@ const fetchTrackUrls = async (page) => {
  * @param {Array<string>} urls 
  */
 const fetchAllTracksData = async (urls) => {
-    return Promise.all(urls.slice(0,1).map(url => fetchTrackData(url)))
+    return Promise.all(urls.map(url => fetchTrackData(url)))
         .catch(err => console.log(err));
 };
 
@@ -100,22 +98,6 @@ const fetchTrackDataAsObject = async (page) => {
         return track;
     }, selectors);
 };
-
-/**
- * Merge image urls to the specific team
- * @param {Array<Team>} teams 
- * @param {Array<string} imageUrls 
- */
-const merge = (teams, property, imageUrls) => {
-    teams.forEach(team => {
-        const name = team.name.toLowerCase();
-        const imageUrl = imageUrls.find(url => url.lastIndexOf(name));
-
-        team[property] = imageUrl;
-    });
-
-    return teams;
-}
 
 /**
  * Main team scrapping execution
