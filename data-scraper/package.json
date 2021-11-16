@@ -13,7 +13,7 @@
   "author": "Rafael Dutra",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.658.0",
+    "aws-sdk": "^2.814.0",
     "puppeteer": "^3.0.0"
   },
   "devDependencies": {}
