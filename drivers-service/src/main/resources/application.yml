@@ -1,1 +1,14 @@
+info:
+  app:
+    name: "@project.name@"
+    version: "@project.version@"
+spring:
+  application.name: "@project.name@"
+  data:
+    mongodb:
+      host: ${MONGODB_HOST:localhost}
+      port: 27017
+      database: f1-project
+      username: f1-app
+      password: f1-app
 
