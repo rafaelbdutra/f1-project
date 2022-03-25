@@ -1,0 +1,19 @@
+node_modules
+.vscode
+.jest
+.DS_Store
+bin
+.*cache
+._npmrc
+._netrc
+*.pyc
+coverage
+.asap-config
+.env
+
+# Intellij Idea project settings
+.idea
+*.iml
+
+# artifactory
+.artifactory
