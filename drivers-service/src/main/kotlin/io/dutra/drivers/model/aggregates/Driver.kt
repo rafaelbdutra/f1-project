@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 @Document(collection = "drivers")
 class Driver(
     @Id val id: String,
-    val code: String,
+    val code: String?,
     val name: String,
     val dob: String,
     val nationality: String,
