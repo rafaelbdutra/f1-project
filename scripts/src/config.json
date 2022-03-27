@@ -1,0 +1,7 @@
+{
+  "baseUrl": "https://ergast.com/api/f1",
+  "drivers": {
+    "getPath": "/drivers.json",
+    "postUrl": "http://localhost:8080/drivers"
+  }
+}

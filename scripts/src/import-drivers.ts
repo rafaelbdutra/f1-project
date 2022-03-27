@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as config from './config.json';
 
 type DriverResult = {
     driverId: string,
@@ -12,24 +13,47 @@ type DriverResult = {
 
 const fetch = async () => {
     const client = axios.create({
-        baseURL: 'http://ergast.com/api/f1',
+        baseURL: config.baseUrl,
     });
 
-    const response = await client.get('/2022/drivers.json');
-    const drivers = response.data.MRData.DriverTable.Drivers as [DriverResult];
+    console.log(`##### Fetching drivers from ${config.baseUrl + config.drivers.getPath} ####`);
 
-    for (const driver of drivers) {
-        const driverRequest = Object.assign({}, {
-            id: driver.driverId,
-            code: driver.code,
-            name: driver.givenName + " " + driver.familyName,
-            dob: driver.dateOfBirth,
-            nationality: driver.nationality,
-            url: driver.url.replace('http://', 'https://'),
-        });
+    let page = 0;
+    const pageSize = 30;
 
-        await axios.post('http://localhost:8080/drivers', driverRequest)
+    while (true) {
+        const offset = page++ * pageSize;
+
+        const response = await client.get(`${config.drivers.getPath}?offset=${offset}`);
+        if (response.status !== 200) {
+            throw new Error(`Failed to fetch drivers for page ${page}`)
+        }
+
+        const drivers = response.data.MRData.DriverTable.Drivers as [DriverResult];
+        if (drivers.length < 1) {
+            break;
+        }
+
+        await Promise.all(drivers.map(driver => postDriver(driver)))
+        console.log(`Imported ${drivers.length} drivers for page ${page}`);
     }
 }
 
-fetch()
+const postDriver = async (driver: DriverResult) => {
+    const driverRequest = Object.assign({}, {
+        id: driver.driverId,
+        code: driver.code,
+        name: driver.givenName + " " + driver.familyName,
+        dob: driver.dateOfBirth,
+        nationality: driver.nationality,
+        url: driver.url.replace('http://', 'https://'),
+    });
+
+    return axios.post(config.drivers.postUrl, driverRequest, {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+}
+
+fetch().then(_ => console.log(`Import finished successfully`))
