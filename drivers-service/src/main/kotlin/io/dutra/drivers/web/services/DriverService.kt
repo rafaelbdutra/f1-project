@@ -15,7 +15,7 @@ class DriverService(
     private val domainEventPublisher: DomainEventPublisher,
 ) {
 
-    suspend fun list(): Flow<Driver> =
+    fun list(): Flow<Driver> =
         driverRepository.findAll().asFlow()
 
     suspend fun create(createDriverRequest: CreateDriverRequest): Driver {

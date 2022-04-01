@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 class DriverController(private val driverService: DriverService) {
 
     @GetMapping
-    suspend fun list(): ResponseEntity<Flow<Driver>> =
+    fun list(): ResponseEntity<Flow<Driver>> =
         driverService.list().let { ResponseEntity.ok(it) }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])

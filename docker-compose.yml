@@ -1,6 +1,6 @@
 version: "3"
 services:
-  mongodb:
+  drivers-mongodb:
     image: bitnami/mongodb:4.4.13
     ports:
       - "27017:27017"
@@ -12,13 +12,13 @@ services:
       - MONGODB_PASSWORD=f1-app
       - MONGODB_DATABASE=f1-project
   drivers-service:
-    build: .
+    build: ./drivers-service
     ports:
-      - "8080:8080"
+      - "8090:8080"
       - "5005:5005"
     links:
-      - mongodb
+      - drivers-mongodb
     environment:
-      - MONGODB_HOST=mongodb
+      - MONGODB_HOST=drivers-mongodb
       - JAVA_TOOL_OPTIONS=
         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
