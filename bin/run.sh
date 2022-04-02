@@ -7,9 +7,10 @@ gradleCmd() {
 }
 
 ### build drivers-service
-SERVICE=drivers-service
-`gradleCmd $SERVICE`
+`gradleCmd drivers-service`
+
+### build race-control-service
+`gradleCmd race-control-service`
 
 ### docker-compose
-
 docker-compose build && docker-compose up
