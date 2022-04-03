@@ -28,6 +28,7 @@ services:
       env/kafka.env
     volumes:
       - kafka-1-data:/var/lib/kafka/data/
+    restart: always
 
   race-control-service:
     build: ./race-control-service
