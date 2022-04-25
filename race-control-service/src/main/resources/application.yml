@@ -4,8 +4,15 @@ info:
     version: "@project.version@"
 spring:
   application.name: "@project.name@"
+  kafka:
+    producer:
+      bootstrap-servers:
+        - ${KAFKA_BOOTSTRAP_ADDR:localhost\:9092}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
 
 kafka:
-  bootstrapAddress: ${KAFKA_BOOTSTRAP_ADDR:localhost\:9092}
   topics:
     race: f1-race

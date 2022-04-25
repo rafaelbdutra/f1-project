@@ -63,6 +63,7 @@ services:
       - kafka-1
     environment:
       - MONGODB_HOST=drivers-mongodb
+      - KAFKA_BOOTSTRAP_ADDR=kafka-1:9092
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
 volumes:
