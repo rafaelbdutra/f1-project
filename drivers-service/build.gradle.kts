@@ -7,7 +7,7 @@ plugins {
 	kotlin("plugin.spring") version "1.6.10"
 }
 
-group = "io.dutra"
+group = "io.dutra.f1"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 

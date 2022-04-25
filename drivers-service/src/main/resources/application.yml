@@ -29,4 +29,4 @@ kafka:
   topics:
     race: f1-race
   properties.type:
-    race: "spring.json.value.default.type=io.dutra.drivers.model.aggregates.Race"
+    race: "spring.json.value.default.type=io.dutra.f1.drivers.model.aggregates.Race"
