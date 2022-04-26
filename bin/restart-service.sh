@@ -2,5 +2,5 @@
 
 SERVICE=$1
 
-eval "./$SERVICE/gradlew -p $SERVICE clean assemble"
+eval "./services/$SERVICE/gradlew -p services/$SERVICE clean assemble"
 docker-compose up -d --build $SERVICE

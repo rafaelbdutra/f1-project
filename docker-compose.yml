@@ -31,7 +31,7 @@ services:
     restart: always
 
   race-control-service:
-    build: ./race-control-service
+    build: ./services/race-control-service
     ports:
       - "8091:8080"
       - "5006:5005"
@@ -54,7 +54,7 @@ services:
       - MONGODB_DATABASE=f1-project
 
   drivers-service:
-    build: ./drivers-service
+    build: ./services/drivers-service
     ports:
       - "8090:8080"
       - "5005:5005"

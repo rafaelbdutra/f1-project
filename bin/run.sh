@@ -7,10 +7,12 @@ gradleCmd() {
 }
 
 ### build drivers-service
-`gradleCmd drivers-service`
+#`gradleCmd drivers-service`
 
 ### build race-control-service
-`gradleCmd race-control-service`
+#`gradleCmd race-control-service`
+
+./gradlew clean assemble
 
 ### docker-compose
 docker-compose build --no-cache && docker-compose up
