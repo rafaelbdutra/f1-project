@@ -5,9 +5,9 @@ info:
 spring:
   application.name: "@project.name@"
   kafka:
+    bootstrap-servers:
+      - ${KAFKA_BOOTSTRAP_ADDR:kafka-1\:9092}
     producer:
-      bootstrap-servers:
-        - ${KAFKA_BOOTSTRAP_ADDR:localhost\:9092}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
