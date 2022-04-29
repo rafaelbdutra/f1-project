@@ -8,3 +8,5 @@ data class CreateDriverRequest(
     val nationality: String,
     val url: String,
 )
+
+data class DriverId(val value: String)

@@ -2,6 +2,7 @@ package io.dutra.f1.drivers.web
 
 import io.dutra.f1.drivers.model.aggregates.Driver
 import io.dutra.f1.drivers.web.requests.CreateDriverRequest
+import io.dutra.f1.drivers.web.requests.DriverId
 import io.dutra.f1.drivers.web.services.DriverService
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
@@ -22,5 +23,10 @@ class DriverController(private val driverService: DriverService) {
         driverService.create(request).let { ResponseEntity.ok(it) }
     } catch (ex: IllegalStateException) {
         ResponseEntity.status(HttpStatus.CONFLICT).body(ex.message)
+    }
+
+    @GetMapping("/{id}")
+    suspend fun get(@PathVariable id: String): Driver {
+        return driverService.get(DriverId(id))
     }
 }

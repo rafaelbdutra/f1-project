@@ -5,3 +5,6 @@ import java.time.LocalDateTime
 
 data class DriverCreated(override val domainObj: Driver, override val occurredOn: LocalDateTime) :
     DomainEvent<Driver>(domainObj, occurredOn)
+
+data class DriverRaceFinished(override val domainObj: Driver, override val occurredOn: LocalDateTime) :
+    DomainEvent<Driver>(domainObj, occurredOn)
