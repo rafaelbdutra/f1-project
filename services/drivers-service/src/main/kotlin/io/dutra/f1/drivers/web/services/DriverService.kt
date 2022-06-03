@@ -2,7 +2,7 @@ package io.dutra.f1.drivers.web.services
 
 import io.dutra.f1.drivers.infra.repositories.DriverRepository
 import io.dutra.f1.drivers.model.aggregates.Driver
-import io.dutra.f1.drivers.model.aggregates.DriverRace
+import io.dutra.f1.drivers.model.aggregates.DriversRace
 import io.dutra.f1.drivers.model.aggregates.Season
 import io.dutra.f1.drivers.model.aggregates.seasonByYear
 import io.dutra.f1.drivers.model.events.DomainEventPublisher
@@ -43,9 +43,9 @@ class DriverService(
         val seasonByYear = driver.seasonByYear(raceFinish.year)
         seasonByYear.apply {
             if (this == null) {
-                driver.seasons.add(Season(raceFinish.year, mutableListOf(raceFinish.driverRace)))
+                driver.seasons.add(Season(raceFinish.year, mutableListOf(raceFinish.driversRace)))
             } else {
-                races.find { it.round == raceFinish.driverRace.round } ?: races.add(raceFinish.driverRace)
+                races.find { it.round == raceFinish.driversRace.round } ?: races.add(raceFinish.driversRace)
             }
         }
 
@@ -57,7 +57,7 @@ class DriverService(
 data class RaceFinish(
     val year: Int,
     val driverId: DriverId,
-    var driverRace: DriverRace,
+    var driversRace: DriversRace,
 )
 
 //fun main() {

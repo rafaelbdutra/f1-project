@@ -40,23 +40,8 @@ data class Meta(
 
 data class Season(
     val year: Number,
-    val races: MutableList<DriverRace> = mutableListOf(),
+    val races: MutableList<DriversRace> = mutableListOf(),
 )
 
-data class DriverRace(
-    val round: Int,
-    val raceName: String,
-    val date: String,
-    val time: String,
-    val url: String,
-    val constructorId: String,
-    val result: DriverRaceResult,
-)
-
-data class DriverRaceResult(
-    val position: Int,
-    val grid: Int,
-    val laps: Int,
-    val points: Float,
-    val status: String,
-)
+fun Driver.seasonByYear(year: Int): Season? =
+    seasons.find { it.year == year }
