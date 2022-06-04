@@ -1,0 +1,18 @@
+type Query {
+    driver(id: String): Driver
+}
+
+type Driver {
+    id: String
+    code: String
+    name: String
+    dob: String
+    nationality: String
+    url: String
+    meta: Meta
+}
+
+type Meta {
+    created: String
+    lastModified: String
+}

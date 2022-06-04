@@ -66,6 +66,17 @@ services:
       - KAFKA_BOOTSTRAP_ADDR=kafka-1:9092
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
+  gateway-api:
+    build: ./services/gateway-api
+    ports:
+      - "8089:8080"
+      - "5004:5005"
+    links:
+      - drivers-service
+      - race-control-service
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+
 volumes:
   zookeeper-1-data:
   zookeeper-1-log:
