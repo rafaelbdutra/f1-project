@@ -6,7 +6,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
-import org.springframework.web.reactive.function.client.awaitExchange
+import javax.annotation.PostConstruct
 
 @RestController
 class DriversController(
@@ -16,13 +16,24 @@ class DriversController(
     private val getUri: String,
 ) {
 
-    @QueryMapping
-    suspend fun driver(@Argument id: String): Any {
-        val webClient = WebClient.create(baseUrl)
-        return webClient.get()
-            .uri("${getUri}${id}")
-            .awaitExchange { response ->
-                response.awaitBody()
-            }
+    private lateinit var webClient: WebClient
+
+    @PostConstruct
+    fun createWebClient() {
+        webClient = WebClient.create(baseUrl)
     }
+
+    @QueryMapping
+    suspend fun drivers() = webClient
+        .get()
+        .uri(getUri)
+        .retrieve()
+        .awaitBody<Any>()
+
+    @QueryMapping
+    suspend fun driver(@Argument id: String) = webClient
+        .get()
+        .uri("${getUri}/${id}")
+        .retrieve()
+        .awaitBody<Any>()
 }

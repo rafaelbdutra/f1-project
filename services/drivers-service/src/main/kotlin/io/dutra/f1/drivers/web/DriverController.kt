@@ -26,7 +26,5 @@ class DriverController(private val driverService: DriverService) {
     }
 
     @GetMapping("/{id}")
-    suspend fun get(@PathVariable id: String): Driver {
-        return driverService.get(DriverId(id))
-    }
+    suspend fun get(@PathVariable id: String): Driver = driverService.get(DriverId(id))
 }

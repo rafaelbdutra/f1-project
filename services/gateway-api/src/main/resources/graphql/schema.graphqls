@@ -1,4 +1,5 @@
 type Query {
+    drivers: [Driver]
     driver(id: String): Driver
 }
 

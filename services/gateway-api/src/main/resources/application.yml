@@ -9,4 +9,6 @@ spring:
 
 drivers-service:
   baseUrl: http://drivers-service:8080
-  get.uri: /drivers/
+  get.uri: "/drivers"
+
+management.endpoints.web.exposure.include: "*"
