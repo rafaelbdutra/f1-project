@@ -1,45 +1,13 @@
 version: "3"
 
 services:
-  zookeeper-1:
-    image: confluentinc/cp-zookeeper:5.5.8
-    hostname: zookeeper-1
-    container_name: zookeeper-1
-    expose:
-      - "2181"
-    env_file:
-      env/zookeeper.env
-    healthcheck:
-      test: /bin/sh -c '[ \"imok\" = \"$$(echo ruok | nc -w 1 127.0.0.1 2181)\" ]' || exit 1
-      interval: 1m
-    volumes:
-      - zookeeper-1-data:/var/lib/zookeeper/data/
-      - zookeeper-1-log:/var/lib/zookeeper/log/
-
-  kafka-1:
-    image: confluentinc/cp-kafka:5.5.8
-    hostname: kafka-1
-    container_name: kafka-1
-    depends_on:
-      - zookeeper-1
-    ports:
-      - "9092:9092"
-    env_file:
-      env/kafka.env
-    volumes:
-      - kafka-1-data:/var/lib/kafka/data/
-    restart: always
-
   race-control-service:
     build: ./services/race-control-service
     ports:
       - "8091:8080"
       - "5006:5005"
-    links:
-      - kafka-1
     environment:
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-      - KAFKA_BOOTSTRAP_ADDR=kafka-1:9092
 
   drivers-mongodb:
     image: bitnami/mongodb:4.4.13
@@ -60,10 +28,8 @@ services:
       - "5005:5005"
     links:
       - drivers-mongodb
-      - kafka-1
     environment:
       - MONGODB_HOST=drivers-mongodb
-      - KAFKA_BOOTSTRAP_ADDR=kafka-1:9092
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
   gateway-api:
@@ -76,8 +42,3 @@ services:
       - race-control-service
     environment:
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-
-volumes:
-  zookeeper-1-data:
-  zookeeper-1-log:
-  kafka-1-data:

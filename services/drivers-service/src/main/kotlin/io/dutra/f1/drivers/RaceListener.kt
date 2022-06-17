@@ -1,5 +1,6 @@
 package io.dutra.f1.drivers
 
+import io.dutra.f1.commons.infra.ConditionalOnKafkaEnabled
 import io.dutra.f1.commons.model.aggregates.Race
 import io.dutra.f1.drivers.web.services.RaceService
 import kotlinx.coroutines.runBlocking
@@ -8,9 +9,12 @@ import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 
 @Component
+@ConditionalOnKafkaEnabled
 class RaceListener(private val raceService: RaceService) {
 
-    @KafkaListener(topics = ["\${kafka.topics.race}"], properties = ["\${kafka.properties.type.race}"])
+    @KafkaListener(topics = ["\${kafka.topics.race}"],
+        properties = ["\${kafka.properties.type.race}"],
+        autoStartup = "\${kafka.enabled}")
     fun listenRaceFinished(race: Race, ack: Acknowledgment) {
         runBlocking {
             println(">>>>> $race")

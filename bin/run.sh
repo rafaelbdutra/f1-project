@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
 
+ENV=$1
+COMPOSE_FILES='-f docker-compose.yml'
 
-gradleCmd() {
-	local SERVICE_FOLDER=$1
-	echo "./$SERVICE_FOLDER/gradlew -p $SERVICE_FOLDER clean assemble"
-}
+if [[ ! -z $ENV ]]
+then
+  COMPOSE_FILES="$COMPOSE_FILES -f docker-compose-$ENV.yml"
+fi
 
-### build drivers-service
-#`gradleCmd drivers-service`
-
-### build race-control-service
-#`gradleCmd race-control-service`
-
+### build services
 ./gradlew clean assemble
 
 ### docker-compose
-docker-compose build --no-cache && docker-compose up
+docker-compose build --no-cache && docker-compose $COMPOSE_FILES up

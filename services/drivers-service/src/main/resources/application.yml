@@ -26,7 +26,17 @@ spring:
       ack-mode: MANUAL_IMMEDIATE
 
 kafka:
+  enabled: false
   topics:
     race: f1-race
   properties.type:
     race: "spring.json.value.default.type=io.dutra.f1.commons.model.aggregates.Race"
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+kafka.enabled: true

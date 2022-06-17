@@ -14,5 +14,15 @@ spring:
         spring.json.add.type.headers: false
 
 kafka:
+  enabled: false
   topics:
     race: f1-race
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+kafka.enabled: true

@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:5.5.8
+    hostname: zookeeper-1
+    container_name: zookeeper-1
+    expose:
+      - "2181"
+    env_file:
+      env/zookeeper.env
+    healthcheck:
+      test: /bin/sh -c '[ \"imok\" = \"$$(echo ruok | nc -w 1 127.0.0.1 2181)\" ]' || exit 1
+      interval: 1m
+    volumes:
+      - zookeeper-1-data:/var/lib/zookeeper/data/
+      - zookeeper-1-log:/var/lib/zookeeper/log/
+
+  kafka-1:
+    image: confluentinc/cp-kafka:5.5.8
+    hostname: kafka-1
+    container_name: kafka-1
+    depends_on:
+      - zookeeper-1
+    ports:
+      - "9092:9092"
+    env_file:
+      env/kafka.env
+    volumes:
+      - kafka-1-data:/var/lib/kafka/data/
+    restart: always
+
+  race-control-service:
+    links:
+      - kafka-1
+    environment:
+      - KAFKA_BOOTSTRAP_ADDR=kafka-1:9092
+
+  drivers-service:
+    links:
+      - kafka-1
+    environment:
+      - KAFKA_BOOTSTRAP_ADDR=kafka-1:9092
+
+volumes:
+  zookeeper-1-data:
+  zookeeper-1-log:
+  kafka-1-data:
