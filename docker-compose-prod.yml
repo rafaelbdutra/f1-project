@@ -35,12 +35,14 @@ services:
       - kafka-1
     environment:
       - KAFKA_BOOTSTRAP_ADDR=kafka-1:9092
+      - SPRING_PROFILES_ACTIVE=prod
 
   drivers-service:
     links:
       - kafka-1
     environment:
       - KAFKA_BOOTSTRAP_ADDR=kafka-1:9092
+      - SPRING_PROFILES_ACTIVE=prod
 
 volumes:
   zookeeper-1-data:

@@ -1,11 +1,7 @@
 import json
 import aiohttp
 import asyncio
-
-headers = {
-    "Content-Type": "application/json"
-}
-
+from commons import requests
 
 async def main():
     with open("config.json", "r") as jsonfile:
@@ -22,8 +18,8 @@ async def main():
     async with aiohttp.ClientSession() as session:
 
         while 1:
-            page += 1
             offset = page * page_size
+            page += 1
 
             drivers_url = f'{base_url}{get_drivers_url}?offset={offset}'
             drivers = await fetch(session, drivers_url, page)
@@ -55,7 +51,7 @@ async def post_driver(session, url, driver):
         "url": driver.get("url").replace("http://", "https://"),
     }
 
-    async with session.post(url, data=json.dumps(driver_request), headers=headers) as response:
+    async with session.post(url, data=json.dumps(driver_request), headers=requests.headers) as response:
         if response.status != 200:
             raise RuntimeError(f'Failed to import driver: {driver_request}. Response: {response.text}')
 

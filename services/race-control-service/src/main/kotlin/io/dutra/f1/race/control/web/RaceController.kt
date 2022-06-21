@@ -3,6 +3,7 @@ package io.dutra.f1.race.control.web
 import io.dutra.f1.commons.model.aggregates.Race
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.KafkaHeaders
 import org.springframework.messaging.support.MessageBuilder
@@ -20,11 +21,12 @@ class RaceController(
 ) {
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun finishRace(@Validated @RequestBody race: Race) {
+    fun finishRace(@Validated @RequestBody race: Race): ResponseEntity<Race> {
         val message = MessageBuilder
             .withPayload(race)
             .setHeader(KafkaHeaders.TOPIC, topic)
             .build()
         kafkaTemplate.send(message)
+        return ResponseEntity.ok(race)
     }
 }

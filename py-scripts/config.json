@@ -3,5 +3,9 @@
   "drivers": {
     "getPath": "/drivers.json",
     "postUrl": "http://localhost:8090/drivers"
+  },
+  "results": {
+    "getPath": "/<year>/results.json",
+    "postUrl": "http://localhost:8091/race"
   }
 }
